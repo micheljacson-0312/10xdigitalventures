@@ -22,7 +22,8 @@ const upload = multer({
 router.post('/upload/:channelId', auth, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-  const fileUrl = `${process.env.CLIENT_URL}/uploads/${req.file.filename}`;
+  const publicBaseUrl = process.env.PUBLIC_API_URL || process.env.APP_URL || process.env.CLIENT_URL;
+  const fileUrl = `${publicBaseUrl.replace(/\/$/, '')}/uploads/${req.file.filename}`;
   const isImage = req.file.mimetype.startsWith('image/');
   const msgType = isImage ? 'image' : 'file';
 
