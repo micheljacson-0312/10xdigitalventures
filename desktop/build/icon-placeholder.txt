@@ -1,0 +1,11 @@
+Place your app icons here:
+- icon.png     (512x512) — Linux + general
+- icon.ico     (256x256) — Windows
+- icon.icns    (512x512) — macOS
+- tray-icon.png (16x16 or 22x22) — System tray
+
+You can generate all formats from a single PNG using:
+  npm install -g electron-icon-builder
+  electron-icon-builder --input=icon.png --output=build/
+
+Or use online tool: https://www.electron.build/icons
