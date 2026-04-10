@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import useChatStore from '@/store/chatStore'
@@ -12,10 +12,37 @@ export default function Sidebar({ activeChannelId }) {
   const [showNewChannel, setShowNewChannel] = useState(false)
   const [newChannelName, setNewChannelName] = useState('')
   const [creating, setCreating] = useState(false)
+  const [users, setUsers] = useState([])
+  const [searchQuery, setSearchQuery] = useState('')
+  const [loadingUsers, setLoadingUsers] = useState(false)
+
+  // Fetch all users for DM search
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data } = await api.get('/users')
+        setUsers(data.filter(u => u.id !== user?.id))
+      } catch (err) {
+        console.error('Failed to fetch users', err)
+      }
+    }
+    fetchUsers()
+  }, [user])
+
+  const startDM = async (userId) => {
+    try {
+      const { data } = await api.post(`/channels/dm/${userId}`)
+      addChannel(data)
+      router.push(`/chat/${data.id}`)
+    } catch (err) {
+      toast.error('Could not start direct message')
+    }
+  }
 
   const publicChannels = channels.filter(c => c.type === 'public')
   const privateChannels = channels.filter(c => c.type === 'private')
-  const dmChannels = channels.filter(c => c.type === 'dm')
+  const dmChannels = channels.filter(c => c.type === 'direct')
+
 
   const createChannel = async e => {
     e.preventDefault()
@@ -102,24 +129,54 @@ export default function Sidebar({ activeChannelId }) {
           </div>
         )}
 
-        {/* DMs */}
-        {dmChannels.length > 0 && (
-          <div className="px-3 mb-1 mt-3">
-            <div className="py-1">
-              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Direct Messages</span>
-            </div>
-            {dmChannels.map(ch => (
-              <Link key={ch.id} href={`/chat/${ch.id}`}>
-                <div className={`sidebar-item flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer text-sm ${activeChannelId === ch.id ? 'active text-white' : 'text-gray-400 hover:text-white'}`}>
-                  <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-xs text-white">
-                    {ch.name?.[0]?.toUpperCase()}
-                  </div>
-                  <span className="truncate">{ch.name}</span>
-                </div>
-              </Link>
-            ))}
+        {/* Direct Messages */}
+        <div className="px-3 mb-1 mt-3">
+          <div className="py-1">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Direct Messages</span>
           </div>
-        )}
+          
+          {/* User Search for new DM */}
+          <div className="mt-2 mb-2">
+            <input 
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search users..."
+              className="w-full text-sm py-1.5 px-2 bg-[#1a1d24] border border-[#2a2d35] rounded-md text-white placeholder-gray-500 focus:outline-none focus:border-brand-500"
+            />
+            {searchQuery && (
+              <div className="mt-1 max-h-40 overflow-y-auto rounded-md bg-[#1a1d24] border border-[#2a2d35]">
+                {users
+                  .filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.email.toLowerCase().includes(searchQuery.toLowerCase()))
+                  .map(u => (
+                    <div 
+                      key={u.id} 
+                      onClick={() => startDM(u.id)}
+                      className="flex items-center gap-2 px-2 py-2 cursor-pointer text-sm text-gray-400 hover:text-white hover:bg-[#2a2d35]"
+                    >
+                      <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-[10px] text-white">
+                        {u.name?.[0]?.toUpperCase()}
+                      </div>
+                      <span className="truncate">{u.name}</span>
+                    </div>
+                  ))
+                }
+              </div>
+            )}
+          </div>
+
+          {/* Existing DM Channels */}
+          {dmChannels.map(ch => (
+            <Link key={ch.id} href={`/chat/${ch.id}`}>
+              <div className={`sidebar-item flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer text-sm ${activeChannelId === ch.id ? 'active text-white' : 'text-gray-400 hover:text-white'}`}>
+                <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-xs text-white">
+                  {ch.name?.[0]?.toUpperCase()}
+                </div>
+                <span className="truncate">{ch.name}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+
       </div>
 
       {/* User profile bottom */}
