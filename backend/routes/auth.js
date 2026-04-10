@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
+const auth = require('../middleware/auth');
 
 router.post('/register', async (req, res) => {
   const { name, email, password, invite_code } = req.body;
@@ -26,8 +27,8 @@ router.post('/register', async (req, res) => {
     );
 
     const [general] = await db.query(
-      'SELECT id FROM channels WHERE workspace_id = ? AND name = "general"',
-      [workspace.id]
+      'SELECT id FROM channels WHERE name = "general" LIMIT 1',
+      []
     );
     if (general.length > 0) {
       await db.query(
@@ -83,6 +84,20 @@ router.get('/me', require('../middleware/auth'), async (req, res) => {
     res.json(users[0]);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.put('/profile', require('../middleware/auth'), async (req, res) => {
+  const { name, bio, status, avatar } = req.body;
+  try {
+    await db.query(
+      'UPDATE users SET name = COALESCE(?, name), bio = COALESCE(?, bio), status = COALESCE(?, status), avatar = COALESCE(?, avatar) WHERE id = ?',
+      [name, bio, status, avatar, req.user.id]
+    );
+    const [user] = await db.query('SELECT id, name, email, avatar, bio, status, is_online FROM users WHERE id = ?', [req.user.id]);
+    res.json(user[0]);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error updating profile' });
   }
 });
 
