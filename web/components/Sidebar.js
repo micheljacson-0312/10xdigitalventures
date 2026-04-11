@@ -179,17 +179,20 @@ export default function Sidebar({ activeChannelId }) {
 
       </div>
 
-      {/* User profile bottom */}
-      <div className="p-3 border-t border-[#2a2d35] flex items-center gap-2">
-        <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
-          {user?.name?.[0]?.toUpperCase() || 'U'}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm text-white font-medium truncate">{user?.name}</p>
-          <p className="text-xs text-gray-400 truncate">{user?.email}</p>
-        </div>
-        <button onClick={logout} title="Logout" className="text-gray-400 hover:text-white text-sm px-1">↪</button>
-      </div>
+       {/* User profile bottom */}
+       <div className="p-3 border-t border-[#2a2d35] flex items-center gap-2">
+         <Link href="/profile" className="flex items-center gap-2 w-full hover:bg-white/[0.03] p-1 rounded-md transition-colors">
+           <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-white text-sm font-medium flex-shrink-0">
+             {user?.name?.[0]?.toUpperCase() || 'U'}
+           </div>
+           <div className="flex-1 min-w-0">
+             <p className="text-sm text-white font-medium truncate">{user?.name}</p>
+             <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+           </div>
+           <button onClick={(e) => { e.preventDefault(); logout(); }} title="Logout" className="text-gray-400 hover:text-white text-sm px-1">↪</button>
+         </Link>
+       </div>
+
     </div>
   )
 }
