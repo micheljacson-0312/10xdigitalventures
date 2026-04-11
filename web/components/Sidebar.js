@@ -56,7 +56,10 @@ export default function Sidebar({ activeChannelId }) {
           <div className="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-bold">
             {user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
-          <span className="text-white font-medium">My Profile</span>
+          <div className="flex flex-col">
+            <span className="text-white font-medium leading-tight">10x Chat Global v2.0</span>
+            <span className="text-xs text-green-400">● Online</span>
+          </div>
         </div>
         <div className="flex gap-4 text-gray-400">
           <button onClick={() => {}} className="hover:text-white">💬</button>
