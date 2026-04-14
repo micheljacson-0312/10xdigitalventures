@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['chat.10xdigitalventures.com', 'localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'chat.10xdigitalventures.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
   },
 }
 module.exports = nextConfig
