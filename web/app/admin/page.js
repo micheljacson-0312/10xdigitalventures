@@ -11,7 +11,7 @@ export default function AdminPage() {
   const fetchUsers = async () => {
     try {
       const { data } = await api.get('/admin/users')
-      setUsers(data)
+      setUsers(data.data)
     } catch (err) {
       toast.error('Failed to fetch users')
     } finally {

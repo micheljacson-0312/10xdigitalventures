@@ -4,11 +4,24 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db');
-const auth = require('../middleware/auth');
+const authMiddleware = require('../middleware/auth');
+const { body, validationResult } = require('express-validator');
 
-router.post('/register', async (req, res) => {
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  next();
+};
+
+router.post('/register', [
+  body('name').notEmpty().trim(),
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({ min: 6 }),
+  body('invite_code').notEmpty()
+], validate, async (req, res) => {
   const { name, email, password, invite_code } = req.body;
-  if (!name || !email || !password) return res.status(400).json({ message: 'All fields required' });
 
   try {
     const [workspaces] = await db.query('SELECT * FROM workspaces WHERE invite_code = ?', [invite_code]);
@@ -27,8 +40,8 @@ router.post('/register', async (req, res) => {
     );
 
     const [general] = await db.query(
-      'SELECT id FROM channels WHERE name = "general" LIMIT 1',
-      []
+      'SELECT id FROM channels WHERE workspace_id = ? AND name = "general" LIMIT 1',
+      [workspace.id]
     );
     if (general.length > 0) {
       await db.query(
@@ -38,16 +51,23 @@ router.post('/register', async (req, res) => {
     }
 
     const token = jwt.sign({ id: userId, email, workspace_id: workspace.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ token, user: { id: userId, name, email, workspace_id: workspace.id } });
+    res.json({
+      data: {
+        token,
+        user: { id: userId, name, email, workspace_id: workspace.id }
+      }
+    });
   } catch (err) {
-    console.error(err);
+    console.error('Registration error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', [
+  body('email').isEmail().normalizeEmail(),
+  body('password').notEmpty()
+], validate, async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'All fields required' });
 
   try {
     const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -66,28 +86,36 @@ router.post('/login', async (req, res) => {
     );
 
     res.json({
-      token,
-      user: { id: user.id, name: user.name, email: user.email, avatar: user.avatar, workspace_id: user.workspace_id }
+      data: {
+        token,
+        user: { id: user.id, name: user.name, email: user.email, avatar: user.avatar, workspace_id: user.workspace_id }
+      }
     });
   } catch (err) {
+    console.error('Login error:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.get('/me', require('../middleware/auth'), async (req, res) => {
+router.get('/me', authMiddleware, async (req, res) => {
   try {
     const [users] = await db.query(
       'SELECT id, name, email, avatar, bio, status, is_online, workspace_id FROM users WHERE id = ?',
       [req.user.id]
     );
     if (users.length === 0) return res.status(404).json({ message: 'User not found' });
-    res.json(users[0]);
+    res.json({ data: users[0] });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-router.put('/profile', require('../middleware/auth'), async (req, res) => {
+router.put('/profile', authMiddleware, [
+  body('name').optional().notEmpty().trim(),
+  body('bio').optional().trim(),
+  body('status').optional().trim(),
+  body('avatar').optional().trim()
+], validate, async (req, res) => {
   const { name, bio, status, avatar } = req.body;
   try {
     await db.query(
@@ -95,7 +123,7 @@ router.put('/profile', require('../middleware/auth'), async (req, res) => {
       [name, bio, status, avatar, req.user.id]
     );
     const [user] = await db.query('SELECT id, name, email, avatar, bio, status, is_online FROM users WHERE id = ?', [req.user.id]);
-    res.json(user[0]);
+    res.json({ data: user[0] });
   } catch (err) {
     res.status(500).json({ message: 'Server error updating profile' });
   }
