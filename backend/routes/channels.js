@@ -23,8 +23,8 @@ router.post('/', auth, async (req, res) => {
   try {
     const channelId = uuidv4();
     await db.query(
-      'INSERT INTO channels (id, name, type, topic, created_by) VALUES (?, ?, ?, ?, ?)',
-      [channelId, name, type, topic, req.user.id]
+      'INSERT INTO channels (id, workspace_id, name, type, topic, created_by) VALUES (?, ?, ?, ?, ?, ?)',
+      [channelId, req.user.workspace_id, name, type, topic, req.user.id]
     );
     await db.query(
       'INSERT INTO channel_members (id, channel_id, user_id, role) VALUES (?, ?, ?, "admin")',
@@ -32,6 +32,7 @@ router.post('/', auth, async (req, res) => {
     );
     res.json({ id: channelId, name, type, topic });
   } catch (err) {
+    console.error('Error creating channel:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -39,7 +40,6 @@ router.post('/', auth, async (req, res) => {
 router.patch('/:id', auth, async (req, res) => {
   const { name, topic } = req.body;
   try {
-    // Only admin can update
     const [member] = await db.query('SELECT role FROM channel_members WHERE channel_id = ? AND user_id = ?', [req.params.id, req.user.id]);
     if (!member.length || member[0].role !== 'admin') return res.status(403).json({ message: 'Only admins can update channel' });
 
@@ -73,18 +73,19 @@ router.post('/dm/:userId', auth, async (req, res) => {
 
   try {
     const [existing] = await db.query(
-      'SELECT c.id FROM channels c JOIN channel_members cm1 ON c.id = cm1.channel_id JOIN channel_members cm2 ON c.id = cm2.channel_id WHERE c.type = "direct" AND cm1.user_id = ? AND cm2.user_id = ?',
+      'SELECT c.id FROM channels c JOIN channel_members cm1 ON c.id = cm1.channel_id JOIN channel_members cm2 ON c.id = cm2.channel_id WHERE c.type = \'dm\' AND cm1.user_id = ? AND cm2.user_id = ?',
       [currentUserId, targetUserId]
     );
 
-    if (existing.length > 0) return res.json({ id: existing[0].id, type: 'direct' });
+    if (existing.length > 0) return res.json({ id: existing[0].id, type: 'dm' });
 
     const channelId = uuidv4();
-    await db.query('INSERT INTO channels (id, name, type, created_by) VALUES (?, ?, ?, ?)', [channelId, 'Direct Message', 'direct', currentUserId]);
+    await db.query('INSERT INTO channels (id, workspace_id, name, type, created_by) VALUES (?, ?, ?, ?, ?)', [channelId, req.user.workspace_id, 'Direct Message', 'dm', currentUserId]);
     await db.query('INSERT INTO channel_members (id, channel_id, user_id) VALUES (?, ?, ?), (?, ?, ?)', [uuidv4(), channelId, currentUserId, uuidv4(), channelId, targetUserId]);
 
-    res.json({ id: channelId, type: 'direct' });
+    res.json({ id: channelId, type: 'dm' });
   } catch (err) {
+    console.error('Error creating DM:', err);
     res.status(500).json({ message: 'Server error creating DM' });
   }
 });
