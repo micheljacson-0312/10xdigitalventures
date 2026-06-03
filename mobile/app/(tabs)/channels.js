@@ -22,7 +22,7 @@ export default function ChannelsScreen() {
     setCreating(true)
     try {
       const { data } = await api.post('/channels', { name: newName.toLowerCase().replace(/\s+/g, '-') })
-      addChannel(data)
+      addChannel(data.data)
       setShowModal(false)
       setNewName('')
       router.push(`/chat/${data.id}`)

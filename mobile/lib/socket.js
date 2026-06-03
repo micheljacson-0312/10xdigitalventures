@@ -6,9 +6,11 @@ let socket = null
 export const getSocket = async () => {
   if (!socket) {
     const token = await SecureStore.getItemAsync('token')
-    socket = io(process.env.EXPO_PUBLIC_SOCKET_URL || 'http://localhost:5000', {
+    const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || 'http://localhost:5000'
+
+    socket = io(SOCKET_URL, {
       auth: { token },
-      transports: ['websocket'],
+      transports: ['polling', 'websocket'], // Allow polling for Hostinger
     })
   }
   return socket

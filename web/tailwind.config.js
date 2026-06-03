@@ -8,12 +8,19 @@ module.exports = {
     extend: {
       colors: {
         brand: {
-          50:  '#e8f1fb',
-          100: '#b5d4f4',
-          500: '#185FA5',
-          600: '#0C447C',
-          700: '#042C53',
+          50:  '#e6fcf5',
+          100: '#c3fae8',
+          500: '#1db791', // 10x Green
+          600: '#12b886',
+          700: '#0ca678',
         },
+        surface: {
+          50:  '#ffffff',
+          100: '#f8f9fa',
+          200: '#e9ecef',
+          800: '#12141a', // Dark theme background
+          900: '#0f1117',
+        }
       },
     },
   },
