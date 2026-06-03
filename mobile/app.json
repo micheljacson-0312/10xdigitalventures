@@ -47,10 +47,10 @@
     ],
     "scheme": "tenxchat",
     "extra": {
-      "apiUrl": "https://chat.10xdigitalventures.com/api",
-      "socketUrl": "https://chat.10xdigitalventures.com",
+      "apiUrl": "http://localhost:5000/api",
+      "socketUrl": "http://localhost:5000",
       "eas": {
-        "projectId": "YOUR_EAS_PROJECT_ID"
+        "projectId": "6872b78b-0888-466d-a60d-123456789abc"
       }
     }
   }
