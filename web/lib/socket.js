@@ -1,21 +1,30 @@
-import { io } from 'socket.io-client'
+import { io } from 'socket.io-client';
 
-let socket = null
+let socket = null;
 
 export const getSocket = () => {
-  if (!socket) {
-    const token = localStorage.getItem('token')
-    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000', {
+  if (!socket && typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
+
+    socket = io(SOCKET_URL, {
       auth: { token },
-      transports: ['websocket'],
-    })
+      transports: ['polling', 'websocket'],
+      withCredentials: true
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error('Socket connection error:', err.message);
+    });
   }
-  return socket
-}
+  return socket;
+};
+
+export const connectSocket = getSocket;
 
 export const disconnectSocket = () => {
   if (socket) {
-    socket.disconnect()
-    socket = null
+    socket.disconnect();
+    socket = null;
   }
-}
+};

@@ -17,19 +17,19 @@ export default function Sidebar({ activeChannelId }) {
     const fetchUsers = async () => {
       try {
         const { data } = await api.get('/users')
-        setUsers(data.filter(u => u.id !== user?.id))
+        setUsers(data.data.filter(u => u.id !== user?.id))
       } catch (err) {
         console.error('Failed to fetch users', err)
       }
     }
-    fetchUsers()
+    if (user?.id) fetchUsers()
   }, [user])
 
   const startDM = async (userId) => {
     try {
       const { data } = await api.post(`/channels/dm/${userId}`)
-      addChannel(data)
-      router.push(`/chat/${data.id}`)
+      addChannel(data.data)
+      router.push(`/chat/${data.data.id}`)
     } catch (err) {
       toast.error('Could not start direct message')
     }
@@ -41,11 +41,11 @@ export default function Sidebar({ activeChannelId }) {
     router.replace('/login')
   }
 
-  const filteredChats = channels.filter(ch => {
-    const matchesSearch = ch.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredChats = (channels || []).filter(ch => {
+    const matchesSearch = ch.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    if (!matchesSearch) return false
     if (filter === 'groups') return ch.type === 'public' || ch.type === 'private'
-    if (filter === 'all') return matchesSearch
-    return matchesSearch
+    return true
   })
 
   return (
@@ -57,13 +57,13 @@ export default function Sidebar({ activeChannelId }) {
             {user?.name?.[0]?.toUpperCase() || 'U'}
           </div>
           <div className="flex flex-col">
-            <span className="text-white font-medium leading-tight">10x Chat Global v2.0</span>
+            <span className="text-white font-medium leading-tight">10x Chat Workspace</span>
             <span className="text-xs text-green-400">● Online</span>
           </div>
         </div>
         <div className="flex gap-4 text-gray-400">
           <button onClick={() => {}} className="hover:text-white">💬</button>
-          <button onClick={logout} className="hover:text-white">↪</button>
+          <button onClick={logout} className="hover:text-white text-lg">↪</button>
         </div>
       </div>
 
@@ -95,11 +95,11 @@ export default function Sidebar({ activeChannelId }) {
 
       {/* Chat List */}
       <div className="flex-1 overflow-y-auto">
-        {searchQuery && (
+        {searchQuery && users.length > 0 && (
           <div className="px-4 py-2 bg-[#111b21]">
             <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Suggested Users</p>
             {users
-              .filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase()) || u.email.toLowerCase().includes(searchQuery.toLowerCase()))
+              .filter(u => u.name?.toLowerCase().includes(searchQuery.toLowerCase()) || u.email?.toLowerCase().includes(searchQuery.toLowerCase()))
               .map(u => (
                 <div 
                   key={u.id} 
@@ -112,9 +112,9 @@ export default function Sidebar({ activeChannelId }) {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
                       <span className="text-white font-medium truncate">{u.name}</span>
-                      <span className="text-xs text-gray-500">Start Chat</span>
+                      <span className="text-xs text-brand-500">Message</span>
                     </div>
-                    <p className="text-sm text-gray-400 truncate">Start a conversation with {u.name}</p>
+                    <p className="text-sm text-gray-400 truncate">{u.status || 'Click to chat'}</p>
                   </div>
                 </div>
               ))
@@ -126,22 +126,22 @@ export default function Sidebar({ activeChannelId }) {
           {filteredChats.map(ch => (
             <Link key={ch.id} href={`/chat/${ch.id}`}>
               <div className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${activeChannelId === ch.id ? 'bg-[#2a3d45]' : 'hover:bg-[#202c33]'}`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-medium ${ch.type === 'direct' ? 'bg-brand-500' : 'bg-gray-600'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-medium ${ch.type === 'dm' ? 'bg-brand-500' : 'bg-gray-600'}`}>
                   {ch.name?.[0]?.toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline">
                     <span className="text-white font-medium truncate">{ch.name}</span>
-                    <span className="text-xs text-gray-500 ml-2">12:00 PM</span>
+                    <span className="text-[11px] text-gray-500 ml-2 uppercase font-medium">{ch.type}</span>
                   </div>
-                  <p className="text-sm text-gray-400 truncate">Click to open chat</p>
+                  <p className="text-sm text-gray-400 truncate">{ch.topic || 'Tap to open'}</p>
                 </div>
               </div>
             </Link>
           ))}
           {filteredChats.length === 0 && !searchQuery && (
-            <div className="p-8 text-center text-gray-500 text-sm">
-              No chats found. Start a new conversation!
+            <div className="p-8 text-center text-gray-500 text-sm italic">
+              No chats found. Use search to find teammates.
             </div>
           )}
         </div>

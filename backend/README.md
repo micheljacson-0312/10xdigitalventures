@@ -7,11 +7,11 @@
 npm install
 ```
 
-2. Edit `.env` with your Hostinger MySQL credentials
+2. Edit `.env` with your Hostinger PostgreSQL (Neon) credentials
 
 3. Import database:
 ```
-mysql -u your_user -p < schema.sql
+psql $DATABASE_URL < schema_pg.sql
 ```
 
 4. Create uploads folder (already included)

@@ -32,9 +32,12 @@ export async function registerForPushNotifications() {
     })
   }
 
-  // Save token to backend
+  // Save token to backend using standardized route
   try {
-    await api.post('/users/push-token', { token })
+    await api.post('/users/device-token', {
+      token,
+      platform: Platform.OS
+    })
   } catch {}
 
   return token

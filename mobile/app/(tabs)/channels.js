@@ -22,7 +22,7 @@ export default function ChannelsScreen() {
     setCreating(true)
     try {
       const { data } = await api.post('/channels', { name: newName.toLowerCase().replace(/\s+/g, '-') })
-      addChannel(data)
+      addChannel(data.data)
       setShowModal(false)
       setNewName('')
       router.push(`/chat/${data.id}`)
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, paddingTop: 56, borderBottomWidth: 0.5, borderBottomColor: '#2a2d35', backgroundColor: '#12141a' },
   headerTitle: { fontSize: 17, fontWeight: '700', color: '#fff' },
   headerSub: { fontSize: 12, color: '#6b7280', marginTop: 2 },
-  addBtn: { width: 32, height: 32, backgroundColor: '#185FA5', borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  addBtn: { width: 32, height: 32, backgroundColor: '#1db791', borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
   addBtnText: { color: '#fff', fontSize: 22, lineHeight: 28 },
   sectionHeader: { fontSize: 11, fontWeight: '600', color: '#6b7280', letterSpacing: 0.8, paddingHorizontal: 16, paddingVertical: 10, paddingTop: 20 },
   channelItem: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   modalBox: { backgroundColor: '#1a1d24', borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 24, paddingBottom: 40 },
   modalTitle: { fontSize: 18, fontWeight: '700', color: '#fff', marginBottom: 16 },
   modalInput: { backgroundColor: '#1e2028', borderWidth: 1, borderColor: '#3a3d45', borderRadius: 10, padding: 14, color: '#e8eaed', fontSize: 15, marginBottom: 12 },
-  modalBtn: { backgroundColor: '#185FA5', borderRadius: 10, padding: 16, alignItems: 'center' },
+  modalBtn: { backgroundColor: '#1db791', borderRadius: 10, padding: 16, alignItems: 'center' },
   modalBtnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   cancelBtn: { alignItems: 'center', marginTop: 12 },
   cancelText: { color: '#9ca3af', fontSize: 15 },

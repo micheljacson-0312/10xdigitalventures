@@ -30,8 +30,8 @@ export default function TabsLayout() {
           api.get('/auth/me'),
           api.get('/channels'),
         ])
-        setUser(meRes.data)
-        setChannels(chRes.data)
+        setUser(meRes.data.data)
+        setChannels(chRes.data.data)
 
         const socket = await getSocket()
         socket.emit('join:channels')

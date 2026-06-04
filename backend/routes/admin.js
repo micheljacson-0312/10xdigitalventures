@@ -12,7 +12,7 @@ const isAdmin = (req, res, next) => {
 router.get('/users', auth, isAdmin, async (req, res) => {
   try {
     const [users] = await db.query('SELECT id, name, email, status FROM users');
-    res.json(users);
+    res.json({ data: users });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }

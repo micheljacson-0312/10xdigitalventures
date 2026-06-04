@@ -19,8 +19,8 @@ export default function LoginScreen() {
     setLoading(true)
     try {
       const { data } = await api.post('/auth/login', { email, password })
-      await SecureStore.setItemAsync('token', data.token)
-      await SecureStore.setItemAsync('user', JSON.stringify(data.user))
+      await SecureStore.setItemAsync('token', data.data.token)
+      await SecureStore.setItemAsync('user', JSON.stringify(data.data.user))
       router.replace('/(tabs)/channels')
     } catch (err) {
       Alert.alert('Login Failed', err.response?.data?.message || 'Please try again')
@@ -76,14 +76,14 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0f1117' },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: 24 },
-  logoBox: { width: 64, height: 64, backgroundColor: '#185FA5', borderRadius: 16, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginBottom: 20 },
+  logoBox: { width: 64, height: 64, backgroundColor: '#1db791', borderRadius: 16, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', marginBottom: 20 },
   logoText: { color: '#fff', fontSize: 22, fontWeight: '700' },
   title: { fontSize: 24, fontWeight: '700', color: '#fff', textAlign: 'center' },
   subtitle: { fontSize: 14, color: '#9ca3af', textAlign: 'center', marginTop: 4, marginBottom: 32 },
   form: { gap: 12 },
   label: { fontSize: 12, color: '#9ca3af', marginBottom: 4 },
   input: { backgroundColor: '#1e2028', borderWidth: 1, borderColor: '#3a3d45', borderRadius: 10, padding: 14, color: '#e8eaed', fontSize: 15, marginBottom: 8 },
-  btn: { backgroundColor: '#185FA5', borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 8 },
+  btn: { backgroundColor: '#1db791', borderRadius: 10, padding: 16, alignItems: 'center', marginTop: 8 },
   btnText: { color: '#fff', fontSize: 16, fontWeight: '600' },
   linkRow: { alignItems: 'center', marginTop: 16 },
   linkText: { color: '#9ca3af', fontSize: 14 },
