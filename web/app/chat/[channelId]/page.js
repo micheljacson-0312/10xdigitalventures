@@ -28,8 +28,8 @@ export default function ChannelPage() {
     setLoading(true)
 
     Promise.all([
-      api.get(\`/messages/\${channelId}\`),
-      api.get(\`/channels/\${channelId}/members\`),
+      api.get(`/messages/${channelId}`),
+      api.get(`/channels/${channelId}/members`),
     ]).then(([msgRes, memRes]) => {
       setMessages(channelId, msgRes.data.data)
       setMembers(memRes.data.data)
@@ -79,7 +79,7 @@ export default function ChannelPage() {
                   <p className="text-[12px] text-brand-500 animate-pulse font-medium">typing...</p>
                 ) : (
                   <p className="text-[12px] text-gray-500">
-                    {channel?.type === 'dm' ? 'Online' : \`\${channel?.topic || 'Digital Workspace'}\`}
+                    {channel?.type === 'dm' ? 'Online' : `${channel?.topic || 'Digital Workspace'}`}
                   </p>
                 )}
               </div>
@@ -87,9 +87,27 @@ export default function ChannelPage() {
           </div>
 
           <div className="flex items-center gap-4 text-gray-400">
-            <button className="hover:text-white transition-colors">🔍</button>
-            <button className="hover:text-white transition-colors">📞</button>
-            <button className="hover:text-white transition-colors">📹</button>
+            <button
+              className="hover:text-white transition-colors"
+              aria-label="Search"
+              title="Search"
+            >
+              🔍
+            </button>
+            <button
+              className="hover:text-white transition-colors"
+              aria-label="Call"
+              title="Call"
+            >
+              📞
+            </button>
+            <button
+              className="hover:text-white transition-colors"
+              aria-label="Video Call"
+              title="Video Call"
+            >
+              📹
+            </button>
           </div>
         </div>
 
