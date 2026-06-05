@@ -65,8 +65,8 @@ export default function Message({ msg, channelId }) {
 
   if (isDeleted) {
     return (
-      <div className={`flex w-full mb-2 \${isOwn ? 'justify-end' : 'justify-start'}`}>
-        <div className={`message-bubble \${isOwn ? 'message-sent' : 'message-received'} opacity-60`}>
+      <div className={`flex w-full mb-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+        <div className={`message-bubble ${isOwn ? 'message-sent' : 'message-received'} opacity-60`}>
           <div className="text-xs italic flex items-center gap-1">
             🚫 <span>This message was deleted</span>
           </div>
@@ -77,11 +77,11 @@ export default function Message({ msg, channelId }) {
 
   return (
     <div
-      className={`flex w-full mb-1 \${isOwn ? 'justify-end' : 'justify-start'} group animate-fade-in`}
+      className={`flex w-full mb-1 ${isOwn ? 'justify-end' : 'justify-start'} group animate-fade-in`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => { setShowActions(false); setShowEmoji(false) }}
     >
-      <div className={`message-bubble relative \${isOwn ? 'message-sent' : 'message-received'}`}>
+      <div className={`message-bubble relative ${isOwn ? 'message-sent' : 'message-received'}`}>
         {/* Sender Name for Received Messages in Groups */}
         {!isOwn && (
           <div className="text-[11px] font-bold text-brand-500 mb-1 leading-none">
@@ -113,7 +113,7 @@ export default function Message({ msg, channelId }) {
               </a>
             ) : msg.type === 'voice' || msg.type === 'audio' ? (
                <div className="flex items-center gap-2 mb-1 min-w-[200px]">
-                 <button className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center text-sm">▶️</button>
+                 <button className="w-8 h-8 rounded-full bg-black/10 flex items-center justify-center text-sm" aria-label="Play voice note" title="Play voice note">▶️</button>
                  <div className="flex-1 h-1 bg-white/10 rounded-full relative">
                    <div className="absolute left-0 top-0 h-full w-1/3 bg-brand-500 rounded-full" />
                  </div>
@@ -150,12 +150,12 @@ export default function Message({ msg, channelId }) {
       {/* Actions (Floating Context Menu) */}
       {showActions && !editing && (
         <div className={`flex items-center gap-1 mx-2 transition-opacity ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-           <button onClick={() => setShowEmoji(!showEmoji)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0">😊</button>
+           <button onClick={() => setShowEmoji(!showEmoji)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0" aria-label="Add reaction" title="Add reaction">😊</button>
            {isOwn && (
-             <button onClick={() => setEditing(true)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white">✏️</button>
+             <button onClick={() => setEditing(true)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white" aria-label="Edit message" title="Edit message">✏️</button>
            )}
            {isOwn && (
-             <button onClick={deleteMsg} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400">🗑️</button>
+             <button onClick={deleteMsg} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400" aria-label="Delete message" title="Delete message">🗑️</button>
            )}
 
            {showEmoji && (
