@@ -138,6 +138,8 @@ export default function Message({ msg, channelId }) {
               <button
                 key={emoji}
                 onClick={() => toggleReaction(emoji)}
+                aria-label={`Toggle ${emoji} reaction`}
+                title={`Toggle ${emoji} reaction`}
                 className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] border transition-colors ${users.includes(user?.id) ? 'bg-brand-500/20 border-brand-500' : 'bg-black/10 border-white/5 hover:border-white/20'}`}
               >
                 {emoji} <span>{users.length}</span>
@@ -150,18 +152,46 @@ export default function Message({ msg, channelId }) {
       {/* Actions (Floating Context Menu) */}
       {showActions && !editing && (
         <div className={`flex items-center gap-1 mx-2 transition-opacity ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-           <button onClick={() => setShowEmoji(!showEmoji)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0">😊</button>
+           <button
+             onClick={() => setShowEmoji(!showEmoji)}
+             aria-label="Add reaction"
+             title="Add reaction"
+             className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0"
+           >
+             😊
+           </button>
            {isOwn && (
-             <button onClick={() => setEditing(true)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white">✏️</button>
+             <button
+               onClick={() => setEditing(true)}
+               aria-label="Edit message"
+               title="Edit message"
+               className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white"
+             >
+               ✏️
+             </button>
            )}
            {isOwn && (
-             <button onClick={deleteMsg} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400">🗑️</button>
+             <button
+               onClick={deleteMsg}
+               aria-label="Delete message"
+               title="Delete message"
+               className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400"
+             >
+               🗑️
+             </button>
            )}
 
            {showEmoji && (
              <div className={`absolute bottom-full mb-2 bg-[#1a1d24] border border-[#3a3d45] rounded-full p-1.5 flex gap-1 shadow-xl z-50 animate-fade-in ${isOwn ? 'right-0' : 'left-0'}`}>
                 {EMOJIS.map(e => (
-                  <button key={e} onClick={() => toggleReaction(e)} className="w-8 h-8 flex items-center justify-center hover:scale-125 transition-transform text-lg">{e}</button>
+                  <button
+                    key={e}
+                    onClick={() => toggleReaction(e)}
+                    aria-label={`React with ${e}`}
+                    className="w-8 h-8 flex items-center justify-center hover:scale-125 transition-transform text-lg"
+                  >
+                    {e}
+                  </button>
                 ))}
              </div>
            )}
