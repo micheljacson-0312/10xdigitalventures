@@ -62,8 +62,22 @@ export default function Sidebar({ activeChannelId }) {
           </div>
         </div>
         <div className="flex gap-4 text-gray-400">
-          <button onClick={() => {}} className="hover:text-white">💬</button>
-          <button onClick={logout} className="hover:text-white">↪</button>
+          <button
+            onClick={() => {}}
+            aria-label="New chat"
+            title="New chat"
+            className="hover:text-white"
+          >
+            💬
+          </button>
+          <button
+            onClick={logout}
+            aria-label="Logout"
+            title="Logout"
+            className="hover:text-white"
+          >
+            ↪
+          </button>
         </div>
       </div>
 
@@ -85,6 +99,8 @@ export default function Sidebar({ activeChannelId }) {
             <button 
               key={f} 
               onClick={() => setFilter(f)}
+              aria-label={`Filter by ${f}`}
+              title={`Filter by ${f}`}
               className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${filter === f ? 'bg-brand-500 text-white' : 'bg-[#202c33] text-gray-400 hover:bg-[#2a2d35]'}`}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
