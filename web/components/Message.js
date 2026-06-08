@@ -150,12 +150,33 @@ export default function Message({ msg, channelId }) {
       {/* Actions (Floating Context Menu) */}
       {showActions && !editing && (
         <div className={`flex items-center gap-1 mx-2 transition-opacity ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-           <button onClick={() => setShowEmoji(!showEmoji)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0">😊</button>
+           <button
+             onClick={() => setShowEmoji(!showEmoji)}
+             aria-label="React with emoji"
+             title="React with emoji"
+             className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0"
+           >
+             😊
+           </button>
            {isOwn && (
-             <button onClick={() => setEditing(true)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white">✏️</button>
+             <button
+               onClick={() => setEditing(true)}
+               aria-label="Edit message"
+               title="Edit message"
+               className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white"
+             >
+               ✏️
+             </button>
            )}
            {isOwn && (
-             <button onClick={deleteMsg} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400">🗑️</button>
+             <button
+               onClick={deleteMsg}
+               aria-label="Delete message"
+               title="Delete message"
+               className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400"
+             >
+               🗑️
+             </button>
            )}
 
            {showEmoji && (
