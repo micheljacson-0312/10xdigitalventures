@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import useChatStore from '@/store/chatStore'
 import { getSocket } from '@/lib/socket'
 import api from '@/lib/api'
+import toast from 'react-hot-toast'
 
 export default function MessageInput({ channelId }) {
   const [content, setContent] = useState('')
@@ -50,7 +51,7 @@ export default function MessageInput({ channelId }) {
     formData.append('file', file)
 
     try {
-      const { data } = await api.post(\`/files/upload/\${channelId}\`, formData)
+      const { data } = await api.post(`/files/upload/${channelId}`, formData)
       const socket = getSocket()
       socket.emit('message:send', {
         channel_id: channelId,
@@ -59,7 +60,7 @@ export default function MessageInput({ channelId }) {
         file_url: data.data.file_url
       })
     } catch (err) {
-      alert('Upload failed')
+      toast.error('Upload failed')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -79,12 +80,22 @@ export default function MessageInput({ channelId }) {
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
         className="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:bg-white/5 transition-colors disabled:opacity-50"
+        aria-label="Attach file"
+        title="Attach file"
       >
-        <span className="text-xl">📎</span>
+        {uploading ? (
+          <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <span className="text-xl">📎</span>
+        )}
       </button>
 
       <div className="flex-1 relative">
+        <label htmlFor="message-textarea" className="sr-only">
+          Type a message
+        </label>
         <textarea
+          id="message-textarea"
           value={content}
           onChange={e => { setContent(e.target.value); startTyping() }}
           onKeyDown={e => {
@@ -97,7 +108,11 @@ export default function MessageInput({ channelId }) {
           rows={1}
           className="resize-none py-3 px-4 pr-12 bg-[#1e2028] border-none focus:ring-0 text-[15px] max-h-32"
         />
-        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all">
+        <button
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all"
+          aria-label="Select emoji"
+          title="Select emoji"
+        >
           😊
         </button>
       </div>
@@ -106,6 +121,8 @@ export default function MessageInput({ channelId }) {
         onClick={handleSend}
         disabled={!content.trim() || uploading}
         className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-500 text-white transition-all hover:scale-105 active:scale-95 disabled:bg-gray-700 disabled:opacity-50 disabled:scale-100"
+        aria-label="Send message"
+        title="Send message"
       >
         <span className="text-xl translate-x-0.5">🚀</span>
       </button>
