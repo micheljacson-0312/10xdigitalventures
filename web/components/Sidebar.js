@@ -62,15 +62,17 @@ export default function Sidebar({ activeChannelId }) {
           </div>
         </div>
         <div className="flex gap-4 text-gray-400">
-          <button onClick={() => {}} className="hover:text-white">💬</button>
-          <button onClick={logout} className="hover:text-white">↪</button>
+          <button onClick={() => {}} className="hover:text-white" aria-label="New Chat" title="New Chat">💬</button>
+          <button onClick={logout} className="hover:text-white" aria-label="Logout" title="Logout">↪</button>
         </div>
       </div>
 
       {/* Search & Filters */}
       <div className="p-3 space-y-3">
         <div className="relative">
+          <label htmlFor="chat-search-input" className="sr-only">Search or start new chat</label>
           <input 
+            id="chat-search-input"
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}

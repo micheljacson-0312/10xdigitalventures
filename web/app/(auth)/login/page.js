@@ -37,12 +37,12 @@ export default function LoginPage() {
         </div>
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Email</label>
-            <input name="email" type="email" placeholder="you@example.com" value={form.email} onChange={handle} required />
+            <label htmlFor="email" className="text-xs text-gray-400 mb-1 block">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@example.com" value={form.email} onChange={handle} required />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Password</label>
-            <input name="password" type="password" placeholder="••••••••" value={form.password} onChange={handle} required />
+            <label htmlFor="password" className="text-xs text-gray-400 mb-1 block">Password</label>
+            <input id="password" name="password" type="password" placeholder="••••••••" value={form.password} onChange={handle} required />
           </div>
           <button type="submit" className="btn-primary mt-2" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
