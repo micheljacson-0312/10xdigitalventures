@@ -50,7 +50,7 @@ export default function MessageInput({ channelId }) {
     formData.append('file', file)
 
     try {
-      const { data } = await api.post(\`/files/upload/\${channelId}\`, formData)
+      const { data } = await api.post(`/files/upload/${channelId}`, formData)
       const socket = getSocket()
       socket.emit('message:send', {
         channel_id: channelId,
@@ -78,6 +78,8 @@ export default function MessageInput({ channelId }) {
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
+        aria-label="Upload file"
+        title="Upload file"
         className="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:bg-white/5 transition-colors disabled:opacity-50"
       >
         <span className="text-xl">📎</span>
@@ -94,10 +96,15 @@ export default function MessageInput({ channelId }) {
             }
           }}
           placeholder="Type a message..."
+          aria-label="Message content"
           rows={1}
           className="resize-none py-3 px-4 pr-12 bg-[#1e2028] border-none focus:ring-0 text-[15px] max-h-32"
         />
-        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all">
+        <button
+          aria-label="Insert emoji"
+          title="Insert emoji"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all"
+        >
           😊
         </button>
       </div>
@@ -105,6 +112,8 @@ export default function MessageInput({ channelId }) {
       <button
         onClick={handleSend}
         disabled={!content.trim() || uploading}
+        aria-label="Send message"
+        title="Send message"
         className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-500 text-white transition-all hover:scale-105 active:scale-95 disabled:bg-gray-700 disabled:opacity-50 disabled:scale-100"
       >
         <span className="text-xl translate-x-0.5">🚀</span>
