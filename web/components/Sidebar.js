@@ -62,8 +62,8 @@ export default function Sidebar({ activeChannelId }) {
           </div>
         </div>
         <div className="flex gap-4 text-gray-400">
-          <button onClick={() => {}} className="hover:text-white">💬</button>
-          <button onClick={logout} className="hover:text-white">↪</button>
+          <button onClick={() => {}} aria-label="New chat" title="New chat" className="hover:text-white">💬</button>
+          <button onClick={logout} aria-label="Logout" title="Logout" className="hover:text-white">↪</button>
         </div>
       </div>
 
@@ -75,9 +75,10 @@ export default function Sidebar({ activeChannelId }) {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search or start new chat"
+            aria-label="Search chats or users"
             className="w-full pl-10 pr-4 py-2 bg-[#202c33] border-none rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
           />
-          <span className="absolute left-3 top-2.5 text-gray-500">🔍</span>
+          <span className="absolute left-3 top-2.5 text-gray-500" aria-hidden="true">🔍</span>
         </div>
         
         <div className="flex gap-2 overflow-x-auto pb-1">
