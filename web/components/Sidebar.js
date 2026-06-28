@@ -62,8 +62,8 @@ export default function Sidebar({ activeChannelId }) {
           </div>
         </div>
         <div className="flex gap-4 text-gray-400">
-          <button onClick={() => {}} className="hover:text-white">💬</button>
-          <button onClick={logout} className="hover:text-white">↪</button>
+          <button onClick={() => {}} aria-label="New chat" title="New chat" className="hover:text-white">💬</button>
+          <button onClick={logout} aria-label="Logout" title="Logout" className="hover:text-white">↪</button>
         </div>
       </div>
 
