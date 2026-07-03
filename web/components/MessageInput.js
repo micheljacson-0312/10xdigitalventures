@@ -3,13 +3,22 @@ import { useState, useRef, useEffect } from 'react'
 import useChatStore from '@/store/chatStore'
 import { getSocket } from '@/lib/socket'
 import api from '@/lib/api'
+import toast from 'react-hot-toast'
 
 export default function MessageInput({ channelId }) {
   const [content, setContent] = useState('')
   const [uploading, setUploading] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const fileInputRef = useRef(null)
+  const textareaRef = useRef(null)
   const typingTimeoutRef = useRef(null)
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 128)}px`
+    }
+  }, [content])
 
   const handleSend = () => {
     if (!content.trim()) return
@@ -50,7 +59,7 @@ export default function MessageInput({ channelId }) {
     formData.append('file', file)
 
     try {
-      const { data } = await api.post(\`/files/upload/\${channelId}\`, formData)
+      const { data } = await api.post(`/files/upload/${channelId}`, formData)
       const socket = getSocket()
       socket.emit('message:send', {
         channel_id: channelId,
@@ -59,7 +68,7 @@ export default function MessageInput({ channelId }) {
         file_url: data.data.file_url
       })
     } catch (err) {
-      alert('Upload failed')
+      toast.error('Upload failed')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -78,6 +87,8 @@ export default function MessageInput({ channelId }) {
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
+        aria-label="Upload file"
+        title="Upload file"
         className="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:bg-white/5 transition-colors disabled:opacity-50"
       >
         <span className="text-xl">📎</span>
@@ -85,6 +96,7 @@ export default function MessageInput({ channelId }) {
 
       <div className="flex-1 relative">
         <textarea
+          ref={textareaRef}
           value={content}
           onChange={e => { setContent(e.target.value); startTyping() }}
           onKeyDown={e => {
@@ -95,9 +107,14 @@ export default function MessageInput({ channelId }) {
           }}
           placeholder="Type a message..."
           rows={1}
-          className="resize-none py-3 px-4 pr-12 bg-[#1e2028] border-none focus:ring-0 text-[15px] max-h-32"
+          aria-label="Message content"
+          className="resize-none py-3 px-4 pr-12 bg-[#1e2028] border-none focus:outline-none focus-visible:ring-1 focus-visible:ring-brand-500 text-[15px] max-h-32 w-full"
         />
-        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all">
+        <button
+          aria-label="Open emoji picker"
+          title="Emojis"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all"
+        >
           😊
         </button>
       </div>
@@ -105,6 +122,8 @@ export default function MessageInput({ channelId }) {
       <button
         onClick={handleSend}
         disabled={!content.trim() || uploading}
+        aria-label="Send message"
+        title="Send"
         className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-500 text-white transition-all hover:scale-105 active:scale-95 disabled:bg-gray-700 disabled:opacity-50 disabled:scale-100"
       >
         <span className="text-xl translate-x-0.5">🚀</span>
