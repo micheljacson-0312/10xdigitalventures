@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import useChatStore from '@/store/chatStore'
 import { getSocket } from '@/lib/socket'
 import api from '@/lib/api'
+import toast from 'react-hot-toast'
 
 export default function MessageInput({ channelId }) {
   const [content, setContent] = useState('')
@@ -10,6 +11,14 @@ export default function MessageInput({ channelId }) {
   const [isTyping, setIsTyping] = useState(false)
   const fileInputRef = useRef(null)
   const typingTimeoutRef = useRef(null)
+  const textareaRef = useRef(null)
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [content])
 
   const handleSend = () => {
     if (!content.trim()) return
@@ -50,7 +59,7 @@ export default function MessageInput({ channelId }) {
     formData.append('file', file)
 
     try {
-      const { data } = await api.post(\`/files/upload/\${channelId}\`, formData)
+      const { data } = await api.post(`/files/upload/${channelId}`, formData)
       const socket = getSocket()
       socket.emit('message:send', {
         channel_id: channelId,
@@ -59,7 +68,7 @@ export default function MessageInput({ channelId }) {
         file_url: data.data.file_url
       })
     } catch (err) {
-      alert('Upload failed')
+      toast.error('Upload failed')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -78,13 +87,22 @@ export default function MessageInput({ channelId }) {
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={uploading}
+        aria-label="Attach file"
         className="w-10 h-10 flex items-center justify-center rounded-full text-gray-400 hover:bg-white/5 transition-colors disabled:opacity-50"
       >
-        <span className="text-xl">📎</span>
+        {uploading ? (
+          <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        ) : (
+          <span className="text-xl">📎</span>
+        )}
       </button>
 
       <div className="flex-1 relative">
         <textarea
+          ref={textareaRef}
           value={content}
           onChange={e => { setContent(e.target.value); startTyping() }}
           onKeyDown={e => {
@@ -95,9 +113,12 @@ export default function MessageInput({ channelId }) {
           }}
           placeholder="Type a message..."
           rows={1}
-          className="resize-none py-3 px-4 pr-12 bg-[#1e2028] border-none focus:ring-0 text-[15px] max-h-32"
+          className="resize-none py-3 px-4 pr-12 bg-[#1e2028] border-none focus:ring-0 text-[15px] max-h-32 overflow-hidden"
         />
-        <button className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all">
+        <button
+          aria-label="Open emoji picker"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-lg grayscale hover:grayscale-0 transition-all"
+        >
           😊
         </button>
       </div>
@@ -105,6 +126,7 @@ export default function MessageInput({ channelId }) {
       <button
         onClick={handleSend}
         disabled={!content.trim() || uploading}
+        aria-label="Send message"
         className="w-10 h-10 flex items-center justify-center rounded-full bg-brand-500 text-white transition-all hover:scale-105 active:scale-95 disabled:bg-gray-700 disabled:opacity-50 disabled:scale-100"
       >
         <span className="text-xl translate-x-0.5">🚀</span>
