@@ -65,8 +65,8 @@ export default function Message({ msg, channelId }) {
 
   if (isDeleted) {
     return (
-      <div className={`flex w-full mb-2 \${isOwn ? 'justify-end' : 'justify-start'}`}>
-        <div className={`message-bubble \${isOwn ? 'message-sent' : 'message-received'} opacity-60`}>
+      <div className={`flex w-full mb-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+        <div className={`message-bubble ${isOwn ? 'message-sent' : 'message-received'} opacity-60`}>
           <div className="text-xs italic flex items-center gap-1">
             🚫 <span>This message was deleted</span>
           </div>
@@ -77,11 +77,11 @@ export default function Message({ msg, channelId }) {
 
   return (
     <div
-      className={`flex w-full mb-1 \${isOwn ? 'justify-end' : 'justify-start'} group animate-fade-in`}
+      className={`flex w-full mb-1 ${isOwn ? 'justify-end' : 'justify-start'} group animate-fade-in`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => { setShowActions(false); setShowEmoji(false) }}
     >
-      <div className={`message-bubble relative \${isOwn ? 'message-sent' : 'message-received'}`}>
+      <div className={`message-bubble relative ${isOwn ? 'message-sent' : 'message-received'}`}>
         {/* Sender Name for Received Messages in Groups */}
         {!isOwn && (
           <div className="text-[11px] font-bold text-brand-500 mb-1 leading-none">
@@ -138,6 +138,7 @@ export default function Message({ msg, channelId }) {
               <button
                 key={emoji}
                 onClick={() => toggleReaction(emoji)}
+                aria-label={`Reaction ${emoji}`}
                 className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] border transition-colors ${users.includes(user?.id) ? 'bg-brand-500/20 border-brand-500' : 'bg-black/10 border-white/5 hover:border-white/20'}`}
               >
                 {emoji} <span>{users.length}</span>
@@ -150,12 +151,30 @@ export default function Message({ msg, channelId }) {
       {/* Actions (Floating Context Menu) */}
       {showActions && !editing && (
         <div className={`flex items-center gap-1 mx-2 transition-opacity ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-           <button onClick={() => setShowEmoji(!showEmoji)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0">😊</button>
+           <button
+             onClick={() => setShowEmoji(!showEmoji)}
+             aria-label="Add reaction"
+             className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-sm grayscale hover:grayscale-0"
+           >
+             😊
+           </button>
            {isOwn && (
-             <button onClick={() => setEditing(true)} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white">✏️</button>
+             <button
+               onClick={() => setEditing(true)}
+               aria-label="Edit message"
+               className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-white"
+             >
+               ✏️
+             </button>
            )}
            {isOwn && (
-             <button onClick={deleteMsg} className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400">🗑️</button>
+             <button
+               onClick={deleteMsg}
+               aria-label="Delete message"
+               className="w-7 h-7 flex items-center justify-center hover:bg-white/5 rounded-full text-xs text-gray-500 hover:text-red-400"
+             >
+               🗑️
+             </button>
            )}
 
            {showEmoji && (
